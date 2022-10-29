@@ -1,0 +1,27 @@
+name: Send submodule updates to parent repo
+
+on:
+  push:
+    branches: master
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: amirisback/plant-tree
+
+      - name: Pull & update submodules recursively
+        run: |
+          git submodule update --init --recursive
+          git submodule update --recursive --remote
+      - name: Commit
+        run: |
+          git config user.name 'amirisback'
+          git config user.email 'faisalamircs@gmail.com'
+          git add --all
+          git commit -m "Update submodules" || echo "No changes to commit"
+          git push
